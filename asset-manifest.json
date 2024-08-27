@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/mandala-chart/static/css/main.2a5fbfea.css",
+    "main.js": "/mandala-chart/static/js/main.8211a8a7.js",
+    "static/js/453.fd8601ae.chunk.js": "/mandala-chart/static/js/453.fd8601ae.chunk.js",
+    "index.html": "/mandala-chart/index.html",
+    "main.2a5fbfea.css.map": "/mandala-chart/static/css/main.2a5fbfea.css.map",
+    "main.8211a8a7.js.map": "/mandala-chart/static/js/main.8211a8a7.js.map",
+    "453.fd8601ae.chunk.js.map": "/mandala-chart/static/js/453.fd8601ae.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.2a5fbfea.css",
+    "static/js/main.8211a8a7.js"
+  ]
+}
