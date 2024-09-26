@@ -14,7 +14,7 @@ const createInitialChart = () => ({
 
 const MandalaChart = () => {
   const [chart, setChart] = useState(createInitialChart);
-  const [chartName, setChartName] = useState("새 만다라 차트");
+  const [chartName, setChartName] = useState("New Mandala Chart");
   const [path, setPath] = useState([]);
   const [savedCharts, setSavedCharts] = useState([]);
   const [movingCells, setMovingCells] = useState([]);
@@ -212,8 +212,8 @@ const MandalaChart = () => {
             };
 
             const newChart = updateChart(prevChart, path, index);
-            console.log("Updated Chart:", newChart);
-            console.log("New SubChart:", newChart.subCharts[path[path.length - 1]]?.subCharts[index]);
+            // console.log("Updated Chart:", newChart);
+            // console.log("New SubChart:", newChart.subCharts[path[path.length - 1]]?.subCharts[index]);
             return newChart;
           });
           setPath((prevPath) => [...prevPath, index]);
@@ -292,35 +292,35 @@ const MandalaChart = () => {
     [renderCell]
   );
 
-  // localStorage에 차트 저장
+  // Save chart to localStorage
   const saveToLocalStorage = useCallback(() => {
     const newChart = { name: chartName, data: chart, date: new Date().toISOString() };
     const updatedCharts = [...savedCharts, newChart];
     localStorage.setItem("mandalaCharts", JSON.stringify(updatedCharts));
     setSavedCharts(updatedCharts);
-    alert("차트가 localStorage에 저장되었습니다!");
+    alert("Chart has been saved to localStorage!");
   }, [chart, chartName, savedCharts]);
 
-  // localStorage에서 차트 불러오기
+  // Load chart from localStorage
   const loadFromLocalStorage = useCallback((selectedChart) => {
     setChartName(selectedChart.name);
     setChart(selectedChart.data);
     setPath([]);
-    alert("차트를 localStorage에서 불러왔습니다!");
+    alert("Chart has been loaded from localStorage!");
   }, []);
 
-  // localStorage에서 차트 삭제
+  // Delete chart from localStorage
   const deleteFromLocalStorage = useCallback(
     (index) => {
       const newSavedCharts = savedCharts.filter((_, i) => i !== index);
       localStorage.setItem("mandalaCharts", JSON.stringify(newSavedCharts));
       setSavedCharts(newSavedCharts);
-      alert("차트가 localStorage에서 삭제되었습니다!");
+      alert("Chart has been deleted from localStorage!");
     },
     [savedCharts]
   );
 
-  // 파일로 저장하는 함수
+  // Function to save to file
   const saveToFile = useCallback(() => {
     const data = JSON.stringify({ name: chartName, data: chart }, null, 2);
     const blob = new Blob([data], { type: "application/json" });
@@ -334,7 +334,7 @@ const MandalaChart = () => {
     URL.revokeObjectURL(url);
   }, [chart, chartName]);
 
-  // 파일에서 불러오는 함수
+  // Function to load from file
   const loadFromFile = useCallback((event) => {
     const file = event.target.files[0];
     if (file) {
@@ -346,19 +346,19 @@ const MandalaChart = () => {
             setChartName(content.name);
             setChart(content.data);
             setPath([]);
-            alert("차트를 성공적으로 불러왔습니다!");
+            alert("Chart successfully loaded!");
           } else {
-            throw new Error("잘못된 파일 형식입니다.");
+            throw new Error("Invalid file format.");
           }
         } catch (error) {
-          alert("파일을 읽는 중 오류가 발생했습니다: " + error.message);
+          alert("An error occurred while reading the file: " + error.message);
         }
       };
       reader.readAsText(file);
     }
   }, []);
 
-  // 파일 선택 다이얼로그를 여는 함수
+  // Function to open file dialog
   const openFileDialog = useCallback(() => {
     fileInputRef.current.click();
   }, []);
@@ -391,7 +391,7 @@ const MandalaChart = () => {
       <p className="mr-1">
         {">"}
         <span key={index} className="m-2 cursor-pointer text-blue-600 hover:underline" onClick={() => handlePathClick(index)}>
-          {item.content || `익명 ${index + 1}`}
+          {item.content || `Anonymous ${index + 1}`}
           {index < displayPath.length - 1}
         </span>
       </p>
@@ -406,28 +406,28 @@ const MandalaChart = () => {
 
   return (
     <div className="flex flex-col items-center p-4 bg-gray-50 min-h-screen">
-      <h1 className="text-3xl font-bold mb-6 text-indigo-600">9x9 다층 만다라 차트</h1>
+      <h1 className="text-3xl font-bold mb-6 text-indigo-600">9x9 Multi-level Mandala Chart</h1>
       <div className="mb-4 flex gap-2">
         <input
           type="text"
           value={chartName}
           onChange={(e) => setChartName(e.target.value)}
           className="border-2 border-indigo-300 rounded px-2 py-1"
-          placeholder="차트 이름"
+          placeholder="Chart Name"
         />
         <button onClick={saveToLocalStorage} className="bg-indigo-500 text-white px-4 py-2 rounded hover:bg-indigo-600">
-          임시 저장
+          Temporary Save
         </button>
         <button onClick={saveToFile} className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
-          파일로 저장
+          Save to File
         </button>
         <button onClick={openFileDialog} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-          파일에서 불러오기
+          Load from File
         </button>
         <input ref={fileInputRef} type="file" onChange={loadFromFile} accept=".json" style={{ display: "none" }} />
       </div>
 
-      {/* 만다라 차트 그리드 */}
+      {/* Mandala Chart Grid */}
       <div className="grid grid-cols-3 gap-2 w-full max-w-3xl shadow-lg bg-white p-6 rounded-xl">
         {Array(3)
           .fill()
@@ -445,7 +445,7 @@ const MandalaChart = () => {
       <Breadcrumb path={path} displayPath={displayPath} navigateToRoot={navigateToRoot} handlePathClick={handlePathClick} />
 
       <div className="mt-10 mb-4 w-full max-w-3xl">
-        <h2 className="text-xl font-bold mb-2">저장된 차트 목록</h2>
+        <h2 className="text-xl font-bold mb-2">Saved Charts List</h2>
         {savedCharts && savedCharts.length > 0 ? (
           savedCharts.map((savedChart, index) => (
             <div key={index} className="flex justify-between items-center mb-2 bg-white p-2 rounded shadow">
@@ -454,16 +454,16 @@ const MandalaChart = () => {
               </span>
               <div>
                 <button onClick={() => loadFromLocalStorage(savedChart)} className="bg-blue-500 text-white px-2 py-1 rounded mr-2 hover:bg-blue-600">
-                  불러오기
+                  Load
                 </button>
                 <button onClick={() => deleteFromLocalStorage(index)} className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">
-                  삭제
+                  Delete
                 </button>
               </div>
             </div>
           ))
         ) : (
-          <p>저장된 차트가 없습니다.</p>
+          <p>No saved charts.</p>
         )}
       </div>
     </div>

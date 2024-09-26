@@ -8,7 +8,6 @@ The Mandala Chart Web Application is an interactive tool for creating and explor
 
 - **Interactive 9x9 Grid**: A main chart with 9 cells, each expandable into its own 9x9 grid.
 - **Multi-level Navigation**: Dive deeper into each cell to create sub-charts.
-- **Visual Connections**: Clear visual cues showing relationships between central and surrounding cells.
 - **Color-coded Sections**: Each 3x3 section is color-coded for easy distinction.
 - **Hover Effects**: Highlight related cells on mouse hover for better understanding of connections.
 - **Smooth Animations**: Engaging transitions when navigating between levels.
