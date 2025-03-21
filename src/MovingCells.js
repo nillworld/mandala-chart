@@ -14,7 +14,7 @@ const MovingCells = ({ cells = [], onAnimationComplete }) => {
 
     // 애니메이션 시작
     const timer = setTimeout(() => {
-      setPositions(cells.map(() => ({ top: "50%", left: "50%", transform: "translate(-50%, -50%) scale(3)" })));
+      setPositions(cells.map(() => ({ top: "40%", left: "50%", transform: "translate(-50%, -50%) scale(3)" })));
     }, 50);
 
     return () => clearTimeout(timer);
@@ -32,12 +32,12 @@ const MovingCells = ({ cells = [], onAnimationComplete }) => {
             className="fixed bg-blue-200 p-2 rounded shadow text-center transition-all duration-500 ease-in-out"
             style={{
               ...position,
-              opacity: position.top === "50%" ? 0 : 1,
+              opacity: position.top === "40%" ? 0 : 1,
               width: cell.startPosition.width,
               height: cell.startPosition.height,
             }}
             onTransitionEnd={() => {
-              if (index === cells.length - 1 && position.top === "50%") {
+              if (index === cells.length - 1 && position.top === "40%") {
                 onAnimationComplete();
               }
             }}
