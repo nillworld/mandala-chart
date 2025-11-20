@@ -21,6 +21,7 @@ const MandalaChart = () => {
 
   const cellRefs = useRef({});
   const fileInputRef = useRef(null);
+  const chartRef = useRef(null);
 
   // localStorage에서 저장된 차트 목록 불러오기
   useEffect(() => {
@@ -404,66 +405,213 @@ const MandalaChart = () => {
     // console.log("Current Path:", path);
   }, [getCurrentChart, path]);
 
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    const saved = localStorage.getItem("darkMode");
+    return saved === "true";
+  });
+
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+    localStorage.setItem("darkMode", isDarkMode);
+  }, [isDarkMode]);
+
+  const toggleDarkMode = () => {
+    setIsDarkMode(!isDarkMode);
+  };
+
+  const [zoomLevel, setZoomLevel] = useState(1.0);
+
+  const handleZoomIn = () => {
+    setZoomLevel((prev) => Math.min(prev + 0.1, 3.0));
+  };
+
+  const handleZoomOut = () => {
+    setZoomLevel((prev) => Math.max(prev - 0.1, 0.5));
+  };
+
+  const handleZoomReset = () => {
+    setZoomLevel(1.0);
+  };
+
   return (
-    <div className="flex flex-col items-center p-4 bg-gray-50 min-h-screen">
-      <h1 className="text-3xl font-bold mb-6 text-indigo-600">9x9 Multi-level Mandala Chart</h1>
-      <div className="mb-4 flex gap-2">
+    <div className="flex flex-col items-center p-8 min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-500 font-sans overflow-auto">
+      <div className="w-full max-w-4xl flex justify-between items-center mb-8 z-10 relative">
+        <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 tracking-tight">
+          Mandala Chart
+        </h1>
+        <button
+          onClick={toggleDarkMode}
+          className="p-3 rounded-full bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm shadow-md text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-700 hover:shadow-lg transition-all duration-300 group"
+          aria-label="Toggle Dark Mode"
+        >
+          {isDarkMode ? (
+            <svg className="w-6 h-6 group-hover:text-yellow-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+              />
+            </svg>
+          ) : (
+            <svg className="w-6 h-6 group-hover:text-indigo-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M20.354 24.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+              />
+            </svg>
+          )}
+        </button>
+      </div>
+
+      <div className="mb-8 flex gap-3 flex-wrap justify-center items-center bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl p-4 rounded-2xl shadow-xl shadow-indigo-100/50 dark:shadow-none border border-white/40 dark:border-slate-700/30 z-10 relative">
         <input
           type="text"
           value={chartName}
           onChange={(e) => setChartName(e.target.value)}
-          className="border-2 border-indigo-300 rounded px-2 py-1"
+          className="border border-slate-200 dark:border-slate-600 rounded-xl px-4 py-2.5 bg-white/50 dark:bg-slate-900/50 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 dark:focus:ring-indigo-400/50 transition-all w-64 font-bold text-slate-700 dark:text-slate-200"
           placeholder="Chart Name"
         />
-        <button onClick={saveToLocalStorage} className="bg-indigo-500 text-white px-4 py-2 rounded hover:bg-indigo-600">
-          Temporary Save
+        <div className="h-8 w-px bg-slate-300 dark:bg-slate-600 mx-2 hidden sm:block"></div>
+        <button
+          onClick={saveToLocalStorage}
+          className="bg-indigo-500 text-white px-5 py-2.5 rounded-xl hover:bg-indigo-600 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 font-bold shadow-indigo-500/20"
+        >
+          Save
         </button>
-        <button onClick={saveToFile} className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
-          Save to File
+        <button
+          onClick={saveToFile}
+          className="bg-emerald-500 text-white px-5 py-2.5 rounded-xl hover:bg-emerald-600 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 font-bold shadow-emerald-500/20"
+        >
+          Export
         </button>
-        <button onClick={openFileDialog} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-          Load from File
+        <button
+          onClick={openFileDialog}
+          className="bg-blue-500 text-white px-5 py-2.5 rounded-xl hover:bg-blue-600 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 font-bold shadow-blue-500/20"
+        >
+          Import
         </button>
         <input ref={fileInputRef} type="file" onChange={loadFromFile} accept=".json" style={{ display: "none" }} />
+        
+        <div className="h-8 w-px bg-slate-300 dark:bg-slate-600 mx-2 hidden sm:block"></div>
+        
+        {/* Zoom Controls */}
+        <div className="flex items-center bg-slate-100/80 dark:bg-slate-700/50 rounded-xl p-1">
+          <button
+            onClick={handleZoomOut}
+            className="p-2 rounded-lg hover:bg-white dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 transition-colors"
+            aria-label="Zoom Out"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+            </svg>
+          </button>
+          <span className="px-3 text-sm font-bold text-slate-600 dark:text-slate-300 min-w-[3rem] text-center">
+            {Math.round(zoomLevel * 100)}%
+          </span>
+          <button
+            onClick={handleZoomIn}
+            className="p-2 rounded-lg hover:bg-white dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 transition-colors"
+            aria-label="Zoom In"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+          </button>
+          <button
+            onClick={handleZoomReset}
+            className="ml-1 p-2 rounded-lg hover:bg-white dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 transition-colors"
+            aria-label="Reset Zoom"
+            title="Reset Zoom"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+          </button>
+        </div>
       </div>
 
       {/* Mandala Chart Grid */}
-      <div className="grid grid-cols-3 gap-2 w-full max-w-3xl shadow-lg bg-white p-6 rounded-xl">
+      <div
+        ref={chartRef}
+        className="grid grid-cols-3 gap-2 w-full max-w-3xl shadow-2xl shadow-indigo-200/50 dark:shadow-none bg-white/40 dark:bg-slate-800/40 backdrop-blur-2xl p-8 rounded-[2.5rem] border border-white/60 dark:border-slate-700/50 transition-all duration-500 origin-top"
+        style={{ transform: `scale(${zoomLevel})` }}
+      >
         {Array(3)
           .fill()
           .map((_, row) =>
             Array(3)
               .fill()
               .map((_, col) => (
-                <div key={`${row}-${col}`} className="border-2 border-gray-300 p-0.5">
+                <div key={`${row}-${col}`} className="relative">
                   {render3x3Grid(row * 3, col * 3)}
                 </div>
               ))
           )}
       </div>
-      {movingCells.length > 0 && <MovingCells cells={movingCells} onAnimationComplete={() => setMovingCells([])} />}
-      <Breadcrumb path={path} displayPath={displayPath} navigateToRoot={navigateToRoot} handlePathClick={handlePathClick} />
+      {movingCells.length > 0 && (
+        <MovingCells
+          cells={movingCells}
+          onAnimationComplete={() => setMovingCells([])}
+          targetPosition={(() => {
+            if (chartRef.current) {
+              const rect = chartRef.current.getBoundingClientRect();
+              return {
+                top: rect.top + rect.height / 2,
+                left: rect.left + rect.width / 2,
+              };
+            }
+            return null;
+          })()}
+        />
+      )}
+      <Breadcrumb
+        path={path}
+        displayPath={displayPath}
+        navigateToRoot={navigateToRoot}
+        handlePathClick={handlePathClick}
+        rootContent={chart.cells[4][4]}
+      />
 
-      <div className="mt-10 mb-4 w-full max-w-3xl">
-        <h2 className="text-xl font-bold mb-2">Saved Charts List</h2>
+      <div className="mt-10 mb- w-full max-w-3xl">
+        <h2 className="text-xl font-bold mb-4 text-slate-800 dark:text-slate-200">Saved Charts List</h2>
         {savedCharts && savedCharts.length > 0 ? (
-          savedCharts.map((savedChart, index) => (
-            <div key={index} className="flex justify-between items-center mb-2 bg-white p-2 rounded shadow">
-              <span>
-                {savedChart.name} - {new Date(savedChart.date).toLocaleString()}
-              </span>
-              <div>
-                <button onClick={() => loadFromLocalStorage(savedChart)} className="bg-blue-500 text-white px-2 py-1 rounded mr-2 hover:bg-blue-600">
-                  Load
-                </button>
-                <button onClick={() => deleteFromLocalStorage(index)} className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">
-                  Delete
-                </button>
+          <div className="grid gap-3">
+            {savedCharts.map((savedChart, index) => (
+              <div
+                key={index}
+                className="flex justify-between items-center bg-white dark:bg-slate-800 p-4 rounded-lg shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-md transition-shadow"
+              >
+                <span className="font-medium text-slate-700 dark:text-slate-300">
+                  {savedChart.name} <span className="text-sm text-slate-400 dark:text-slate-500 ml-2">{new Date(savedChart.date).toLocaleString()}</span>
+                </span>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => loadFromLocalStorage(savedChart)}
+                    className="bg-blue-100 text-blue-600 px-3 py-1.5 rounded hover:bg-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50 transition-colors text-sm font-medium"
+                  >
+                    Load
+                  </button>
+                  <button
+                    onClick={() => deleteFromLocalStorage(index)}
+                    className="bg-red-100 text-red-600 px-3 py-1.5 rounded hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50 transition-colors text-sm font-medium"
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
-            </div>
-          ))
+            ))}
+          </div>
         ) : (
-          <p>No saved charts.</p>
+          <p className="text-slate-500 dark:text-slate-400 text-center py-8 bg-slate-100 dark:bg-slate-800/50 rounded-lg border border-dashed border-slate-300 dark:border-slate-700">
+            No saved charts yet.
+          </p>
         )}
       </div>
     </div>
