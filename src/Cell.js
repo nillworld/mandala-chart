@@ -45,7 +45,7 @@ const Cell = forwardRef(({ value, onChange, isSubChartPosition, onNavigate, isCe
       isCenterCenter
         ? "bg-emerald-200 dark:bg-emerald-900/70 shadow-lg z-10 border-2 border-white/10"
         : isCenter
-        ? "bg-emerald-50 dark:bg-emerald-800/30 border border-indigo-100 dark:border-slate-700"
+        ? "bg-emerald-50 dark:bg-emerald-800/30 border border-gray-300 dark:border-slate-700"
         : isSubChartPosition
         ? "bg-emerald-100 dark:bg-emerald-700/40 border border-emerald-100 dark:border-emerald-800/30"
         : "bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/80"
